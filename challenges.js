@@ -1,5 +1,8 @@
 var menu = document.getElementById("quick-nav");
 
+function addMenuItem(item) {
+	menu.appendChild(item);
+}
 
 function createTestCase(input, output) {
 	return {
@@ -66,53 +69,101 @@ function createTestCaseDiv(input, expected, got) {
 
 	var inputDiv = document.createElement('div');
 	inputDiv.className = "test-case-input";
-	inputDiv.innerHTML = "<div class='test-label'>Input:</div><pre class='prettyprint'>" + input + "</pre>";
+	inputDiv.innerHTML = "<div class='test-label'>Input:</div>";
+	var inputPre = document.createElement('pre');
+	inputPre.className = "prettyprint";
+	inputPre.innerHTML = input;
+	inputDiv.appendChild(inputPre);
 	wrapper.appendChild(inputDiv);
 
 	var expectedDiv = document.createElement('div');
 	expectedDiv.className = "test-case-expected";
-	expectedDiv.innerHTML = "<div class='test-label'>Expected:</div><pre class='prettyprint'>" + expected + "</pre>";
+	expectedDiv.innerHTML = "<div class='test-label'>Expected:</div>";
+	var expectedPre = document.createElement('pre');
+	expectedPre.className = "prettyprint";
+	expectedPre.innerHTML = expected;
+	expectedDiv.appendChild(expectedPre);
 	wrapper.appendChild(expectedDiv);
 
 	var gotDiv = document.createElement('div');
 	gotDiv.className = "test-case-got";
-	gotDiv.innerHTML = "<div class='test-label'>Output:</div><pre class='prettyprint'>" + got + "</pre>";
+	gotDiv.innerHTML = "<div class='test-label'>Output:</div>";
+	var gotPre = document.createElement('pre');
+	gotPre.className = "prettyprint";
+	gotPre.innerHTML = got;
+	gotDiv.appendChild(gotPre);
 	wrapper.appendChild(gotDiv);
 
-	return wrapper;
+	var buttonsDiv = document.createElement('div');
+	buttonsDiv.className = "test-case-btns";
+	buttonsDiv.innerHTML = "Run";
+	wrapper.appendChild(buttonsDiv);
+
+	return { 
+		'wrapper'		: wrapper,
+		'inputDiv'		: inputDiv,
+		'expectedDiv'	: expectedDiv,
+		'gotDiv'		: gotDiv,
+		'inputPre'		: inputPre,
+		'expectedPre'	: expectedPre,
+		'gotPre'		: gotPre,
+		'buttonsDiv'	: buttonsDiv,
+	};
 }
 
-function createChallenge(number, solution, testCases, url) {
+function createChallenge(number, solution, cases, url) {
 	var toReturn = {};
 	toReturn.number = number;
+	toReturn.solution = solution;
 	toReturn.divs = createAndAddSolutionDiv(number, url, solution.toString());
+	toReturn.testCases = [];
 
 	toReturn.scrollTo = function() {
 		toReturn.divs.wrapper.scrollIntoView();
 	};
 
-	toReturn.menuButton = createMenuItem(number, "Challenge #"+number);
-	toReturn.menuButton.onclick = toReturn.scrollTo;
+	toReturn.addNewTestCase = function(testCase) {
+		testCase.divs = createTestCaseDiv(testCase.input, testCase.output, "Not executed yet.");
+		testCase.setCase = function(input, expected) {
+			testCase.input = JSON.stringify(input);
+			testCase.output = JSON.stringify(expected);
+			testCase.divs.inputPre.innerHTML = testCase.input;
+			testCase.divs.expectedPre.innerHTML = testCase.output;
+		};
+		testCase.run = function() {
+			var result = JSON.stringify(solution(JSON.parse(testCase.input)));
+			testCase.divs.gotPre.innerHTML = result;
+			if(result == testCase.output) {
+				testCase.divs.wrapper.className = "test-case-div passed";
+			} else {
+				testCase.divs.wrapper.className = "test-case-div failed";
+			}
+		};
+		testCase.divs.buttonsDiv.addEventListener("click", function() {
+			caseRunner(testCaseNum);
+		});
+		toReturn.testCases.push(testCase);
+		toReturn.divs.testCaseDiv.appendChild(testCase.divs.wrapper);
+	};
 
-	document.getElementById("quick-nav").appendChild(toReturn.menuButton);
-
+	toReturn.runAll = function() {
+		for(var i = 0; i < toReturn.testCases.length; ++i) {
+			toReturn.testCases[i].run();
+		}
+	};
 
 	toReturn.log = function(s) {
 		toReturn.divs.outputDiv.appendChild = toReturn.divs.outputDiv.innerHTML + "<p>" + s + "</p>";
 	};
 
-	toReturn.addTestCaseOutput = function(input, expected, got) {
-		var divToAdd = createTestCaseDiv(input, expected, got);
-		toReturn.divs.testCaseDiv.appendChild(divToAdd);
-	};
+	//setup menu button
+	toReturn.menuButton = createMenuItem(number, "Challenge #"+number);
+	toReturn.menuButton.onclick = toReturn.scrollTo;
+	addMenuItem(toReturn.menuButton);
 
-	toReturn.solution = solution;
-	toReturn.testCases = testCases;
-
-	toReturn.run = function() {
-		for(var i = 0; i < this.testCases.length; ++i) {
-			this.addTestCaseOutput(testCases[i].input, testCases[i].output, JSON.stringify(solution(JSON.parse(testCases[i].input))));
-		}
+	//add all cases.
+	for(var i = 0; i < cases.length; ++i) {
+		toReturn.addNewTestCase(cases[i]);
 	}
 
 	return toReturn;
@@ -353,7 +404,6 @@ challenges.push(createChallenge("218-2", function(input) {
 	for(var i = 0; i < input.length; ++i) {
 		if(input[i].indexOf("viewList();") >= 0) {
 			var aList = todoList.viewList();
-			alert(aList.length);
 			for(var j = 0; j < aList.length; ++j) {
 				output.push(aList[j]);
 			}
@@ -382,7 +432,7 @@ challenges.push(createChallenge("218-2", function(input) {
 // })(), ""));
 
 for(var i = 0; i < challenges.length; ++i) {
-	challenges[i].run();
+	challenges[i].runAll();
 }
 
 prettyPrint();
