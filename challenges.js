@@ -46,7 +46,8 @@ function createAndAddSolutionDiv(number, url, code) {
 		'titleDiv': title,
 		'codeDiv': codeDiv,
 		'testCaseDiv': testCaseDiv,
-		'outputDiv': outputDiv
+		'outputDiv': outputDiv,
+		'addTestCaseDiv': addTestCaseButton
 	};
 }
 
@@ -56,6 +57,18 @@ function createMenuItem(number, title) {
 	div.className = "menu-item";
 	div.innerHTML = title;
 	return div;
+}
+
+function createCodeMirrorTA(parent, _value, _mode) {
+	return CodeMirror(parent, {
+		value: _value,
+		mode: _mode,
+		lineNumbers: true,
+		lineWrapping: true,
+		tabSize: 2,
+		indentWithTabs: false,
+		theme: "mbo"
+	});
 }
 
 function createTestCaseDiv(input, expected, got) {
@@ -70,28 +83,36 @@ function createTestCaseDiv(input, expected, got) {
 	var inputDiv = document.createElement('div');
 	inputDiv.className = "test-case-input";
 	inputDiv.innerHTML = "<div class='test-label'>Input:</div>";
-	var inputPre = document.createElement('pre');
-	inputPre.className = "prettyprint";
-	inputPre.innerHTML = input;
-	inputDiv.appendChild(inputPre);
+	var inputPre = createCodeMirrorTA(inputDiv, input, "javascript");
+	// var inputPre = document.createElement('pre');
+	// inputPre.className = "prettyprint";
+	// inputPre.innerHTML = input;
+	// inputDiv.appendChild(inputPre);
 	wrapper.appendChild(inputDiv);
 
 	var expectedDiv = document.createElement('div');
 	expectedDiv.className = "test-case-expected";
 	expectedDiv.innerHTML = "<div class='test-label'>Expected:</div>";
-	var expectedPre = document.createElement('pre');
-	expectedPre.className = "prettyprint";
-	expectedPre.innerHTML = expected;
-	expectedDiv.appendChild(expectedPre);
+	var expectedPre = createCodeMirrorTA(expectedDiv, expected, "javascript");
+	// var expectedPre = document.createElement('pre');
+	// expectedPre.className = "prettyprint";
+	// expectedPre.innerHTML = expected;
+	// expectedDiv.appendChild(expectedPre);
 	wrapper.appendChild(expectedDiv);
 
 	var gotDiv = document.createElement('div');
 	gotDiv.className = "test-case-got";
 	gotDiv.innerHTML = "<div class='test-label'>Output:</div>";
-	var gotPre = document.createElement('pre');
-	gotPre.className = "prettyprint";
-	gotPre.innerHTML = got;
-	gotDiv.appendChild(gotPre);
+	var gotPre = createCodeMirrorTA(gotDiv, got, "javascript");
+	// var gotPre = document.createElement('pre');
+	// gotPre.className = "prettyprint";
+	// gotPre.innerHTML = got;
+	// gotDiv.appendChild(gotPre);
+	setTimeout(function() {
+		expectedPre.refresh();
+		inputPre.refresh();
+		gotPre.refresh();
+	}, 1);
 	wrapper.appendChild(gotDiv);
 
 	var buttonsDiv = document.createElement('div');
@@ -125,22 +146,23 @@ function createChallenge(number, solution, cases, url) {
 	toReturn.addNewTestCase = function(testCase) {
 		testCase.divs = createTestCaseDiv(testCase.input, testCase.output, "Not executed yet.");
 		testCase.setCase = function(input, expected) {
-			testCase.input = JSON.stringify(input);
-			testCase.output = JSON.stringify(expected);
-			testCase.divs.inputPre.innerHTML = testCase.input;
-			testCase.divs.expectedPre.innerHTML = testCase.output;
+			testCase.divs.inputPre.innerHTML = JSON.stringify(input);
+			testCase.divs.expectedPre.innerHTML = JSON.stringify(expected);
 		};
 		testCase.run = function() {
-			var result = JSON.stringify(solution(JSON.parse(testCase.input)));
-			testCase.divs.gotPre.innerHTML = result;
-			if(result == testCase.output) {
+			var result = JSON.stringify(solution(JSON.parse(testCase.divs.inputPre.getValue())));
+			testCase.divs.gotPre.setValue(result);
+			setTimeout(function() {
+				gotPre.refresh();
+			}, 1);
+			if(result == JSON.stringify(JSON.parse(testCase.divs.expectedPre.getValue()))) {
 				testCase.divs.wrapper.className = "test-case-div passed";
 			} else {
 				testCase.divs.wrapper.className = "test-case-div failed";
 			}
 		};
 		testCase.divs.buttonsDiv.addEventListener("click", function() {
-			caseRunner(testCaseNum);
+			testCase.run();
 		});
 		toReturn.testCases.push(testCase);
 		toReturn.divs.testCaseDiv.appendChild(testCase.divs.wrapper);
@@ -165,6 +187,10 @@ function createChallenge(number, solution, cases, url) {
 	for(var i = 0; i < cases.length; ++i) {
 		toReturn.addNewTestCase(cases[i]);
 	}
+
+	toReturn.divs.addTestCaseDiv.addEventListener('click', function() {
+		toReturn.addNewTestCase({input: "", output: "" });
+	});
 
 	return toReturn;
 }

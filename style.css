@@ -100,8 +100,12 @@ body {
 	line-height: 14px;
 	font-size: 14px;
 	font-family: "Open Sans", sans-serif;
-	padding-left: 10px;
 	margin-top: 10px;
+	margin-bottom: 5px;
+}
+
+.test-case-div div:first-child .test-label {
+	margin-top: 0;
 }
 
 .sln-test-cases {
@@ -110,10 +114,16 @@ body {
 
 .test-case-div { 
 	margin-top: 2px;
+	padding: 10px;
 }
 
 .test-case-div pre {
     border: 0 !important;
+}
+
+.test-case-input, .test-case-expected, .test-case-got {
+	height: 60px;
+	overflow: hidden;
 }
 
 .btn-add-test {
