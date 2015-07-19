@@ -1,0 +1,139 @@
+body { 
+	width: 83%;
+	margin-left: 16%;
+	background-color: #5d5f61;
+}
+
+.solution {
+	position: relative;
+	float: left;
+	width: 100%;
+	height: auto;
+	overflow: hidden;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	/*border: 1px solid #444;*/
+	font-family: "Courier";
+	font-size: 12px;
+	background-color: #1d1f21;
+	box-shadow: 0 0 5px #333;
+}
+
+.solution-title {
+	font-size: 18px;
+	line-height: 40px;
+	font-family: "Open Sans", sans-serif;
+	color: whitesmoke;
+	background-color: #de935f;
+	height: 40px;
+	padding-left: 10px;
+}
+
+.solution-title a {
+	color: #0090dd;
+}
+
+.solution-code {
+	width: 100%;
+	margin: 0 auto;
+}
+
+.sln-output {
+	width: 100%;
+	margin: 0 auto;
+}
+
+#quick-nav {
+	position: fixed;
+	width: 15%;
+	height: 100vh;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	background-color: #1d1f21;
+	box-shadow: 0 0 5px #333;
+
+}
+
+.menu-item {
+	left: 1px;
+	right: 1px;
+	height: 48px;
+	border: 1px solid rgba(255, 255, 255, 0);
+	line-height: 50px;
+	text-align: center;
+	font-family: "Open Sans", sans-serif;
+	color: #ccc;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.menu-item:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+	border: 1px solid white;
+	color: white;
+}
+
+.solution pre {
+    tab-size: 2;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    padding-left: 20px !important;
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+    word-wrap: break-word;
+}
+
+.failed {
+	border: 1px solid #880000;
+}
+
+.passed {
+	border: 1px solid #008800;
+}
+
+.test-label {
+	width: 100%;
+	color: #ccc;
+	height: 14px;
+	line-height: 14px;
+	font-size: 14px;
+	font-family: "Open Sans", sans-serif;
+	padding-left: 10px;
+	margin-top: 10px;
+}
+
+.sln-test-cases {
+
+}
+
+.test-case-div { 
+	margin-top: 2px;
+}
+
+.test-case-div pre {
+    border: 0 !important;
+}
+
+.btn-add-test {
+	left: 1px;
+	right: 1px;
+	height: 58px;
+	border: 1px solid rgba(0, 0, 0, 0);
+	font-size: 50px;
+	line-height: 56px;
+	color: #aaa;
+	cursor: pointer;
+	text-align: center;
+	font-family: "Open Sans", sans-serif;
+}
+
+.btn-add-test:hover {
+	background-color: rgba(255, 255, 255, 0.2);
+	border: 1px solid #ccc;
+	color: white;
+}
+
+
+
