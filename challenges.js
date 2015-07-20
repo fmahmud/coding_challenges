@@ -30,6 +30,22 @@ function createAndAddSolutionDiv(number, url, code) {
 
 	var testCaseDiv = document.createElement('div');
 	testCaseDiv.className = "sln-test-cases";
+
+	var tcTitleDiv = document.createElement('div');
+	tcTitleDiv.className = "test-case-title";
+	tcTitleDiv.innerHTML = "Test Cases"
+
+	testCaseDiv.style.height = "auto";
+
+	tcTitleDiv.onclick = function() {
+		if(testCaseDiv.style.height == "40px") {
+			testCaseDiv.style.height = "auto";
+		} else {
+			testCaseDiv.style.height = "40px";
+		}
+	}
+
+	testCaseDiv.appendChild(tcTitleDiv);
 	div.appendChild(testCaseDiv);
 
 	var outputDiv = document.createElement('pre');
@@ -38,9 +54,9 @@ function createAndAddSolutionDiv(number, url, code) {
 	// div.appendChild(outputDiv);
 
 	var addTestCaseButton = document.createElement('div');
-	addTestCaseButton.className = 'btn-add-test';
+	addTestCaseButton.className = 'test-case-div btn-add-test';
 	addTestCaseButton.innerHTML = "+";
-	div.appendChild(addTestCaseButton);
+	testCaseDiv.appendChild(addTestCaseButton);
 	return { 
 		'wrapper': div,
 		'titleDiv': title,
@@ -67,7 +83,8 @@ function createCodeMirrorTA(parent, _value, _mode) {
 		lineWrapping: true,
 		tabSize: 2,
 		indentWithTabs: false,
-		theme: "mbo"
+		theme: "mbo",
+		viewportMargin: Infinity
 	});
 }
 
@@ -103,20 +120,18 @@ function createTestCaseDiv(input, expected, got) {
 	var gotDiv = document.createElement('div');
 	gotDiv.className = "test-case-got";
 	gotDiv.innerHTML = "<div class='test-label'>Output:</div>";
-	var gotPre = createCodeMirrorTA(gotDiv, got, "javascript");
-	// var gotPre = document.createElement('pre');
-	// gotPre.className = "prettyprint";
-	// gotPre.innerHTML = got;
-	// gotDiv.appendChild(gotPre);
+	var gotPre = document.createElement('pre');
+	gotPre.className = "prettyprint";
+	gotPre.innerHTML = got;
+	gotDiv.appendChild(gotPre);
 	setTimeout(function() {
 		expectedPre.refresh();
 		inputPre.refresh();
-		gotPre.refresh();
 	}, 1);
 	wrapper.appendChild(gotDiv);
 
 	var buttonsDiv = document.createElement('div');
-	buttonsDiv.className = "test-case-btns";
+	buttonsDiv.className = "btn-run-test";
 	buttonsDiv.innerHTML = "Run";
 	wrapper.appendChild(buttonsDiv);
 
@@ -151,21 +166,21 @@ function createChallenge(number, solution, cases, url) {
 		};
 		testCase.run = function() {
 			var result = JSON.stringify(solution(JSON.parse(testCase.divs.inputPre.getValue())));
-			testCase.divs.gotPre.setValue(result);
-			setTimeout(function() {
-				gotPre.refresh();
-			}, 1);
+			testCase.divs.gotPre.innerHTML = result;
 			if(result == JSON.stringify(JSON.parse(testCase.divs.expectedPre.getValue()))) {
 				testCase.divs.wrapper.className = "test-case-div passed";
 			} else {
 				testCase.divs.wrapper.className = "test-case-div failed";
 			}
+			testCase.divs.gotPre.className = "prettyprint";
+			prettyPrint();
 		};
 		testCase.divs.buttonsDiv.addEventListener("click", function() {
 			testCase.run();
 		});
 		toReturn.testCases.push(testCase);
-		toReturn.divs.testCaseDiv.appendChild(testCase.divs.wrapper);
+		toReturn.divs.testCaseDiv.insertBefore(testCase.divs.wrapper, toReturn.divs.addTestCaseDiv);
+		prettyPrint();
 	};
 
 	toReturn.runAll = function() {
@@ -175,7 +190,7 @@ function createChallenge(number, solution, cases, url) {
 	};
 
 	toReturn.log = function(s) {
-		toReturn.divs.outputDiv.appendChild = toReturn.divs.outputDiv.innerHTML + "<p>" + s + "</p>";
+		toReturn.divs.outputDiv.innerHTML = toReturn.divs.outputDiv.innerHTML + "<p>" + s + "</p>";
 	};
 
 	//setup menu button
@@ -189,7 +204,7 @@ function createChallenge(number, solution, cases, url) {
 	}
 
 	toReturn.divs.addTestCaseDiv.addEventListener('click', function() {
-		toReturn.addNewTestCase({input: "", output: "" });
+		toReturn.addNewTestCase({input: JSON.stringify(""), output: JSON.stringify("") });
 	});
 
 	return toReturn;
