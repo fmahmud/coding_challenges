@@ -1,7 +1,19 @@
 body { 
-	width: 83%;
-	margin-left: 16%;
+	width: 100vw;
+	height: 100vh;
 	background-color: #5d5f61;
+	min-width: 1126px;
+	overflow: hidden;
+}
+
+#solutions {
+	position: absolute;
+	left: 260px;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	height: 100vh;
+	overflow: scroll;
 }
 
 .solution {
@@ -44,9 +56,9 @@ body {
 }
 
 #quick-nav {
-	position: fixed;
-	width: 15%;
-	height: 100vh;
+	position: absolute;
+	width: 250px;
+	height: 100%;
 	left: 0;
 	top: 0;
 	bottom: 0;
@@ -120,10 +132,10 @@ body {
 .test-case-div { 
 	position: relative;
 	float: left;
-	margin: 10px;
+	margin: .2%;
 	padding: 10px;
-	width: 30%;
-	height: 230px;
+	width: calc(100% / 3 - 29px);
+	height: 260px;
 	overflow: hidden;
 }
 
@@ -172,19 +184,30 @@ body {
 }
 
 .CodeMirror {
-	height: 50px !important;
+	height: 60px !important;
 }
 
 .test-case-title {
 	height: 40px;
 	width: 100%;
-	color: #ccc;
+	color: #333;
 	font-size: 18px;
 	font-family: "Open Sans", sans-serif;
 	line-height: 40px;
-	background-color: #1d1f21;
-	text-align: center;
+	background-color: #90dd00;
+	text-align: left;
+	padding-left: 10px;
 	cursor: pointer;
+}
+
+.test-case-title.failed {
+	color: #ccc;
+	background-color: #dd5050;
+}
+
+.test-cases-title.passed {
+	background-color: #90dd00;
+	color: #333;
 }
 
 .test-case-title:hover {

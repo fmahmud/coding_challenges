@@ -63,7 +63,8 @@ function createAndAddSolutionDiv(number, url, code) {
 		'codeDiv': codeDiv,
 		'testCaseDiv': testCaseDiv,
 		'outputDiv': outputDiv,
-		'addTestCaseDiv': addTestCaseButton
+		'addTestCaseDiv': addTestCaseButton,
+		'tcBanner': tcTitleDiv
 	};
 }
 
@@ -169,8 +170,10 @@ function createChallenge(number, solution, cases, url) {
 			testCase.divs.gotPre.innerHTML = result;
 			if(result == JSON.stringify(JSON.parse(testCase.divs.expectedPre.getValue()))) {
 				testCase.divs.wrapper.className = "test-case-div passed";
+				toReturn.divs.tcBanner.className = "test-case-title passed";
 			} else {
 				testCase.divs.wrapper.className = "test-case-div failed";
+				toReturn.divs.tcBanner.className = "test-case-title failed";
 			}
 			testCase.divs.gotPre.className = "prettyprint";
 			prettyPrint();
@@ -204,7 +207,7 @@ function createChallenge(number, solution, cases, url) {
 	}
 
 	toReturn.divs.addTestCaseDiv.addEventListener('click', function() {
-		toReturn.addNewTestCase({input: JSON.stringify(""), output: JSON.stringify("") });
+		toReturn.addNewTestCase(createTestCase("", ""));
 	});
 
 	return toReturn;
@@ -464,6 +467,127 @@ challenges.push(createChallenge("218-2", function(input) {
 	return cases;
 })(), "https://www.reddit.com/r/dailyprogrammer/comments/39ws1x/20150615_challenge_218_easy_todo_list_part_1/"));
 
+challenges.push(createChallenge("001", function(input) {
+	var matched = input.match(/^-?\d+(\.\d+)?$/);
+	return matched != null && input == matched[0];
+}, (function() {
+	var cases = [];
+	cases.push(createTestCase("1234", true));
+	return cases;
+})(), "http://www.careercup.com/question?id=5753629812195328"));
+
+challenges.push(createChallenge("002", function(input) {
+	var countAndSay = function(n) {
+		if(n == 1) {
+			return "1";
+		}
+		var lower = countAndSay(n - 1);
+	    var toRet = "";
+	    var count = 0;
+	    var previousChar = lower.charAt(0);
+	    for(var i = 0; i < lower.length; ++i) {
+	        if(lower.charAt(i) == previousChar) { 
+	            count++;
+	        } else {                         
+	            toRet += count;
+	            toRet += previousChar;
+	            previousChar = lower.charAt(i);
+	            count = 1;
+	        }
+	    }
+	    toRet += count;
+	    toRet += previousChar;
+	    return toRet;
+	};
+	return countAndSay(input);
+}, (function() {
+	var cases = [];
+	cases.push(createTestCase(1, "1"));
+	cases.push(createTestCase(2, "11"));
+	cases.push(createTestCase(3, "21"));
+	cases.push(createTestCase(4, "1211"));
+	cases.push(createTestCase(5, "111221"));
+	cases.push(createTestCase(6, "312211"));
+	return cases;
+})(), "Turn Interview Question"));
+
+
+challenges.push(createChallenge("003", function(input) {
+	var isTwentyfour = function(a, b) {
+	    return (a + b == 24 || 
+	            a - b == 24 || 
+	            a * b == 24 || 
+	            a / b == 24 );
+	};
+
+	var recTest = function(arr, a, index) {
+		if(index == arr.length - 1 && isTwentyfour(a, input[index])) {
+			return true;
+		} else if(index == input.length) {
+			return false;
+		} else {
+			return recTest(input, a+input[index], index+1)
+                || recTest(input, a-input[index], index+1)
+                || recTest(input, a*input[index], index+1)
+                || recTest(input, a/input[index], index+1);
+		}
+	};
+
+	return recTest(input, 0, 0, 0);
+}, (function() {
+	var cases = [];
+	cases.push(createTestCase([1, 2, 3, 4], true));
+	cases.push(createTestCase([1, 2, 3, 2, 2], true));
+	cases.push(createTestCase([1, 2, 3, 8, 2], true));
+	cases.push(createTestCase([48, 2], true));
+	cases.push(createTestCase([1, 2], false));
+	cases.push(createTestCase([24], true));
+	return cases;
+})(), ""));
+
+
+// public class PeekingIterator {
+//     private Iterator it;
+//     private Object currentNext;
+//     private boolean reachedEnd;
+    
+//     public PeekingIterator(Iterator it) {
+//       this.it = it;
+//       if(this.it.hasNext()){
+//       	currentNext = this.it.next();
+//         reachedEnd = false;
+//       } else {
+//         reachedEnd = true; 
+//       }
+//     }
+    
+//     public Object next() throws Exception {
+//       if(!reachedEnd) {
+//         Object toReturn = currentNext;
+//         if(it.hasNext()) {
+//           currentNext = it.next();          
+//         } else {
+//           currentNext = null;
+//           reachedEnd = true;
+//         }
+//         return toReturn;
+//       } else {
+//         throw new Exception("Passed end of iterator."); 
+//       }
+//     }
+    
+//     public Object peek() throws Exception {
+//       if(reachedEnd) {
+//         throw new Exception("Passed end of iterator.");
+//       }
+//       return currentNext;
+//     }
+    
+//     public boolean hasNext() {
+// 		return !reachedEnd;
+//     }
+// }
+
 // challenges.push(createChallenge(220, function(input) {
 	
 // }, (function() {
@@ -477,10 +601,5 @@ for(var i = 0; i < challenges.length; ++i) {
 }
 
 prettyPrint();
-
-
-
-
-
 
 
