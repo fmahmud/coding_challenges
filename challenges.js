@@ -545,6 +545,37 @@ challenges.push(createChallenge("003", function(input) {
 	return cases;
 })(), ""));
 
+challenges.push(createChallenge(123, function(input) {
+	var divides = function(number, divisor) {
+		return number % divisor == 0;
+	};
+
+	var findProperDivisors = function(number) {
+		var divisors = [];
+		for(var i = 1; i < number; ++i) {
+			if(divides(number, i)) {
+				divisors.push(i);
+			}
+		}
+		return divisors;
+	}
+
+	var divisors = findProperDivisors(input);
+	var output = "";
+	var sum = 0;
+	for(var i = 0; i < divisors.length - 1; i++) {
+		output = output + divisors[i] + " + ";
+		sum = divisors[i] + sum;
+	}
+	sum = sum + divisors[divisors.length - 1];
+	output = output + divisors[divisors.length - 1] + " = " + sum;
+	return output;
+}, (function() {
+	var cases = [];
+	cases.push(createTestCase(12, "1 + 2 + 3 + 4 + 6 = 16"));
+	return cases;
+})(), ""));
+
 
 // public class PeekingIterator {
 //     private Iterator it;
